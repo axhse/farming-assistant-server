@@ -1,0 +1,5 @@
+.vs/
+bin/
+obj/
+Program.cs
+Test.cs
