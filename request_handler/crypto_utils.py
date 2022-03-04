@@ -4,7 +4,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
 
 
-class CryptoUtils:
+class CryptoUtils:    # TESTED OK
 
     @staticmethod
     def encrypt_rsa(byte_data, rsa_public_key):
@@ -26,7 +26,7 @@ class CryptoUtils:
         return res
 
     @staticmethod
-    def get_random_bytes(count=16):
+    def get_random_bytes(count):
         return bytes([randint(0, 255) for _ in range(count)])
 
     @staticmethod

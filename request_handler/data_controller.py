@@ -7,8 +7,7 @@ from time import time
 load_dotenv()
 
 
-# TESTED
-class DataController:
+class DataController:    # TESTED OK
 
     TOKEN_RELEVANCE_PERIOD = int(environ['TOKEN_RELEVANCE_PERIOD'])
 
@@ -24,7 +23,6 @@ class DataController:
 
     @staticmethod
     def add_user(username, customer_info, pwd_hash):
-        print(1)
         DataController.delete_user(username)
         DataController.__cursor.execute(f'INSERT INTO customer (username, customer_info, pwd_hash)'
                                         f'VALUES (\'{username}\', \'{customer_info}\', \'{pwd_hash}\');COMMIT;')
@@ -32,11 +30,7 @@ class DataController:
     @staticmethod
     def delete_user(username):
         DataController.__cursor.execute(f'DELETE FROM customer WHERE username = \'{username}\';COMMIT;')
-
-    @staticmethod
-    def update_customer_info(username, new_customer_info):
-        DataController.__cursor.execute(f'UPDATE customer SET customer_info = \'{json.dumps(new_customer_info)}\''
-                                        f'WHERE username = \'{username}\';COMMIT;')
+        DataController.delete_token(username)
 
     @staticmethod
     def get_customer_info(username):
@@ -45,17 +39,25 @@ class DataController:
         return None if data is None else json.loads(data.customer_info)
 
     @staticmethod
+    def update_customer_info(username, new_customer_info):
+        DataController.__cursor.execute(f'UPDATE customer SET customer_info = \'{json.dumps(new_customer_info)}\''
+                                        f'WHERE username = \'{username}\';COMMIT;')
+
+    @staticmethod
     def token_exists(token):
         DataController.__cursor.execute(f'SELECT token FROM auth_token WHERE token = \'{token}\';')
         return DataController.__cursor.fetchone() is not None
 
     @staticmethod
     def add_token(username, token, relevance_period=TOKEN_RELEVANCE_PERIOD):
-        print(relevance_period)
-        DataController.__cursor.execute(f'DELETE FROM auth_token WHERE username = \'{username}\';COMMIT;')
+        DataController.delete_token(username)
         DataController.__cursor.execute(f'INSERT INTO auth_token (username, token, relevance_limit)'
                                         f'VALUES (\'{username}\', \'{token}\', \'{round(time()) + relevance_period}\');'
                                         f'COMMIT;')
+
+    @staticmethod
+    def delete_token(username):
+        DataController.__cursor.execute(f'DELETE FROM auth_token WHERE username = \'{username}\';COMMIT;')
 
     @staticmethod
     def get_token(username):
@@ -70,7 +72,7 @@ class DataController:
         return data is not None and time() < data.relevance_limit
 
     @staticmethod
-    def get_username_by_token(token):   # TODO: check relevance and delete expired
+    def get_username_by_token(token):
         DataController.__cursor.execute(f'SELECT username FROM auth_token WHERE token = \'{token}\';')
         data = DataController.__cursor.fetchone()
         return None if data is None else data.username
