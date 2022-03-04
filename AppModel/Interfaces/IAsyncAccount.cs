@@ -4,6 +4,7 @@ namespace App.Models
 {
     public interface IAsyncAccount
     {
+        string Username { get; }
         CustomerInfo CustomerInfo { get; }
 
         Recommendation[] GetRecommendations(Field field);

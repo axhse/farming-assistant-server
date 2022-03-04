@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace App.Models
@@ -15,22 +16,19 @@ namespace App.Models
             _recommendations = new();
             CustomerInfo = new CustomerInfo();
         }
-        public Account(string authToken) : this()
+
+        public string Username { get; protected set; }
+        public CustomerInfo CustomerInfo { get; protected set; } = new CustomerInfo();
+        public string AuthToken
         {
-            _requestSender = new RequestSender(authToken);
+            get => _requestSender.AuthToken;
+            init => _requestSender.AuthToken = value;
         }
 
-        public CustomerInfo CustomerInfo { get; protected set; }
-
-        public static Account ConvertFromAccountInfo(AccountInfo accountInfo)
-        {
-            return new Account(accountInfo.AuthToken) { CustomerInfo = accountInfo.CustomerInfo };
-        }
-
-        public AccountInfo ConvertToAccountInfo()
-        {
-            return new AccountInfo() { AuthToken = _requestSender.AuthToken, CustomerInfo = CustomerInfo };
-        }
+        public static bool UsernameIsCorrect(string username) => username != null && 6 <= username.Length
+                && username.Length <= 20 && !new Regex(@"\W").IsMatch(username);
+        public static bool PasswordIsCorrect(string password) => password != null && 8 <= password.Length
+                && password.Length <= 40;
 
         public async Task<string[]> SignUpAsync(string username, string password) =>
             await Task.Run(() => SignUp(username, password));
@@ -48,7 +46,7 @@ namespace App.Models
             string[] signUpErrors = _requestSender.SignUp(username, password);
             if (signUpErrors.Length == 0)
             {
-                CustomerInfo.Username = username;
+                Username = username;
                 return _requestSender.UpdateCustomerInfo(CustomerInfo);
             }
             return signUpErrors;
@@ -59,6 +57,7 @@ namespace App.Models
             string[] signInErrors = _requestSender.SignIn(username, password);
             if (signInErrors.Length == 0)
             {
+                Username = username;
                 string[] getInfoErrors = _requestSender.GetCustomerInfo(out CustomerInfo customerInfo);
                 if (getInfoErrors.Length == 0)
                 {
@@ -82,7 +81,7 @@ namespace App.Models
                     updateRequired = false;
                     foreach (Recommendation recommendation in _recommendations[field])
                     {
-                        if (((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds() > recommendation.RelevanceLimitTimestamp)
+                        if (!recommendation.IsRelevant)
                         {
                             updateRequired = true;
                             break;

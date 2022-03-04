@@ -4,11 +4,9 @@ namespace App.Models
 {
     public interface ICustomerInfo
     {
-        List<Field> Fields { get; set; }
-        string Username { get; set; }
-
-        bool FieldAddingIsPossible();
-        /* static */ bool UsernameIsCorrect(string username);
+        List<Field> Fields { get; init; }
+        public void AddField(Field field);
+        public void DeleteField(Field field);
     }
 
     public interface IField
@@ -16,8 +14,6 @@ namespace App.Models
         string CultivatedPlant { get; set; }
         string Location { get; set; }
         string Name { get; set; }
-
-        /* static */ bool NameIsCorrect(string name);
     }
 
     public interface IRecommendation

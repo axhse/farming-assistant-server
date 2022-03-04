@@ -7,11 +7,11 @@ namespace App.Models
         public Response() { }
         public Response(object errors = null, string parameter = null, string token = null)
         {
-            if (errors as string[] != null)
+            if (errors is string[])
             {
                 Errors = errors as string[];
             }
-            else if (errors as string != null)
+            else if (errors is string)
             {
                 Errors = new string[] { errors as string };
             }
@@ -19,19 +19,19 @@ namespace App.Models
             {
                 Errors = Array.Empty<string>();
             }
-            Parameter = parameter ?? string.Empty;
-            NewAuthToken = token ?? string.Empty;
+            Parameter = parameter;
+            NewAuthToken = token;
         }
 
-        public string[] Errors { get; set; }
-        public string Parameter { get; set; }
-        public string NewAuthToken { get; set; }
+        public string[] Errors { get; init; }
+        public string Parameter { get; init; }
+        public string NewAuthToken { get; init; }
     }
 
 
     public abstract class Request
     {
-        public string Type { get; set; }
+        public string Type { get; init; }
     }
 
     public class SignUpRequest : Request
@@ -58,6 +58,14 @@ namespace App.Models
         public string Password { get; init; }
     }
 
+    public class GetCustomerInfoRequest : Request
+    {
+        public GetCustomerInfoRequest()
+        {
+            Type = nameof(GetCustomerInfoRequest);
+        }
+    }
+
     public class UpdateCustomerInfoRequest : Request
     {
         public UpdateCustomerInfoRequest(CustomerInfo customerInfo)
@@ -66,14 +74,6 @@ namespace App.Models
             CustomerInfo = customerInfo;
         }
         public CustomerInfo CustomerInfo { get; init; }
-    }
-
-    public class GetCustomerInfoRequest : Request
-    {
-        public GetCustomerInfoRequest()
-        {
-            Type = nameof(GetCustomerInfoRequest);
-        }
     }
 
     public class GetRecommendationsRequest : Request
