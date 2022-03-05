@@ -65,12 +65,15 @@ namespace App.Services
             {
                 string data = File.ReadAllText(StaticSettings.AccountDataPath);
                 var accounts = JsonSerializer.Deserialize<List<Account>>(data);
-                _accounts.Clear();
-                foreach (var account in accounts)
+                if (accounts.Count > 0)
                 {
-                    _accounts.Add(account);
+                    _accounts.Clear();
+                    foreach (var account in accounts)
+                    {
+                        _accounts.Add(account);
+                    }
+                    return await Task.FromResult(true);
                 }
-                return await Task.FromResult(true);
             }
             catch { }
             return await Task.FromResult(false);

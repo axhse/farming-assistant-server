@@ -57,10 +57,10 @@ namespace App.Models
             string[] signInErrors = _requestSender.SignIn(username, password);
             if (signInErrors.Length == 0)
             {
-                Username = username;
                 string[] getInfoErrors = _requestSender.GetCustomerInfo(out CustomerInfo customerInfo);
                 if (getInfoErrors.Length == 0)
                 {
+                    Username = username;
                     CustomerInfo = customerInfo;
                 }
                 return getInfoErrors;
