@@ -47,7 +47,12 @@ namespace App.Models
             if (signUpErrors.Length == 0)
             {
                 Username = username;
-                return _requestSender.UpdateCustomerInfo(CustomerInfo);
+                string[] updateInfoErrors = _requestSender.UpdateCustomerInfo(CustomerInfo);
+                if (updateInfoErrors.Length != 0)
+                {
+                    CustomerInfo = new();
+                }
+                return updateInfoErrors;
             }
             return signUpErrors;
         }
