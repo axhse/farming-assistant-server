@@ -40,8 +40,8 @@ class AccountUtils:    # TESTED OK
             if type(field['CultivatedPlant']) is not str or field['CultivatedPlant'] not in cultivated_plants:
                 return False
         if field['Name'] is not None:
-            if type(field['Name']) is not str or len(field['Name']) > 50:    # FIXME: SQL-injection
-                # or re.search(r'[\s;]', field['Name']) is not None:
+            if not (type(field['Name']) is str and len(field['Name']) <= 50
+                    and re.search(r'[^a-zA-Z0-9]', field['Name']) is None):    # FIXME: extend avoiding SQL-injection
                 return False
         return True
 
