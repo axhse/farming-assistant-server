@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace App.Models
 {
@@ -50,7 +51,8 @@ namespace App.Models
             }
         }
 
-        private static bool NameIsCorrect(string name) => name != null && name.Length <= 30;
+        private static bool NameIsCorrect(string name) => name != null
+                && name.Length <= 50 && !new Regex(@"[^a-zA-Z0-9]").IsMatch(name);
     }
 
     public class Recommendation : IRecommendation

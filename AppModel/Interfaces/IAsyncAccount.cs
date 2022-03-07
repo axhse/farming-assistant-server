@@ -12,6 +12,13 @@ namespace App.Models
         Task<string[]> SignInAsync(string username, string password);
         Task<string[]> SignUpAsync(string username, string password);
         Task<string[]> UpdateCustomerInfoAsync();
+
+        /* Also:
+
+        public static bool UsernameIsCorrect(string username);
+        public static bool PasswordIsCorrect(string password);
+
+        */
     }
 }
 

@@ -26,7 +26,7 @@ namespace App.Models
         }
 
         public static bool UsernameIsCorrect(string username) => username != null && 6 <= username.Length
-                && username.Length <= 20 && !new Regex(@"\W").IsMatch(username);
+                && username.Length <= 20 && !new Regex(@"[^a-z0-9]").IsMatch(username);
         public static bool PasswordIsCorrect(string password) => password != null && 8 <= password.Length
                 && password.Length <= 40;
 
@@ -47,7 +47,7 @@ namespace App.Models
             if (signUpErrors.Length == 0)
             {
                 Username = username;
-                string[] updateInfoErrors = _requestSender.UpdateCustomerInfo(CustomerInfo);
+                string[] updateInfoErrors = UpdateCustomerInfo();
                 if (updateInfoErrors.Length != 0)
                 {
                     CustomerInfo = new();
