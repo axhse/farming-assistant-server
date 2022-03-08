@@ -4,5 +4,6 @@
   "DefaultToken": "0000000000000000000000000000000000000000000000000000000000000000",
   "SendingTimeout": 5000,
   "ReceivingTimeout": 5000,
-  "FieldListLimitSize": 100
+  "FieldListLimitSize": 100,
+  "PlantListLimitSize": 100
 }

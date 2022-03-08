@@ -1,9 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace App.Models
 {
+    public enum Plants
+    {
+        Default,
+        Carrot,
+        Potato,
+        Wheat
+    }
+
     public class CustomerInfo : ICustomerInfo
     {
         public List<Field> _fields = new();
@@ -36,10 +45,31 @@ namespace App.Models
         private string _name;
 
         public string Location { get; set; }
-        public string CultivatedPlant { get; set; }
+
+        [JsonIgnore]
+        public Plants Plant { get; set; }
+        public string PlantName
+        {
+            get => Enum.GetName(Plant);
+            set
+            {
+                foreach (Plants plant in Enum.GetValues(typeof(Plants)))
+                {
+                    if (Enum.GetName(plant) == value)
+                    {
+                        Plant = plant;
+                        return;
+                    }
+                }
+                Plant = Plants.Default;
+            }
+        }
+
+        public long PlantingDate { get; set; }
 
         /// <exception cref="ArgumentException"/>
-        public string Name{
+        public string Name
+        {
             get => _name;
             set
             {
@@ -51,13 +81,13 @@ namespace App.Models
             }
         }
 
-        private static bool NameIsCorrect(string name) => name != null
-                && name.Length <= 50 && !new Regex(@"[^a-zA-Z0-9]").IsMatch(name);
+        private static bool NameIsCorrect(string name) => name == null
+                || (name.Length <= 50 && !new Regex(@"[^a-zA-Z0-9]").IsMatch(name));
     }
 
     public class Recommendation : IRecommendation
     {
-        public string Type { get; init; }
+        public string Type { get; init; }    // TODO: enum ?
         public string Value { get; init; }
         public long RelevanceLimitTimestamp { get; init; }
 

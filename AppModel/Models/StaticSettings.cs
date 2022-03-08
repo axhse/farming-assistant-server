@@ -19,6 +19,7 @@ namespace App.Models
         public int ReceivingTimeout { get; init; }
         public string DefaultToken { get; init; }
         public int FieldListLimitSize { get; init; }
+        public int PlantListLimitSize { get; init; }
 
         public static ConfigVariables LoadFromFile() =>
             JsonSerializer.Deserialize<ConfigVariables>(File.ReadAllText(StaticSettings.ConfigFilePath));

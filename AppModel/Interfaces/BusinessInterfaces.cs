@@ -11,9 +11,10 @@ namespace App.Models
 
     public interface IField
     {
-        string CultivatedPlant { get; set; }
+        Plants Plant { get; set; }
         string Location { get; set; }
         string Name { get; set; }
+        long PlantingDate { get; set; }
     }
 
     public interface IRecommendation
