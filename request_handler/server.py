@@ -4,6 +4,7 @@ import json
 from data_controller import DataController
 from account_utils import AccountUtils
 from crypto_utils import CryptoUtils
+from recommendation import RecommendationMaker
 from os import environ
 from dotenv import load_dotenv
 from pyodbc import DatabaseError
@@ -11,7 +12,7 @@ from pyodbc import DatabaseError
 load_dotenv()
 
 
-class FarmingAppServer:
+class FarmingAppServer:    # Tested OK
 
     HOST = environ['SERVER_HOST']
     PORT = int(environ['SERVER_PORT'])
@@ -84,7 +85,8 @@ class FarmingAppServer:
 
             if request['Type'] == 'GetRecommendationsRequest':    # TODO: verify subscription
                 if AccountUtils.field_is_correct(request['TargetField']):
-                    response.Parameter = "[]"    # TODO: RecommendationMaker
+                    recommendations = RecommendationMaker.get_recommendations(request['TargetField'])
+                    response.Parameter = [r.get_object_dict() for r in recommendations]    # TODO: test
                 else:
                     response.Errors = ['InvalidFieldError']
 

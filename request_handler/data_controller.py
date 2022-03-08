@@ -7,7 +7,7 @@ from time import time
 load_dotenv()
 
 
-class DataController:    # TESTED OK
+class DataController:    # Tested OK
 
     TOKEN_RELEVANCE_PERIOD = int(environ['TOKEN_RELEVANCE_PERIOD'])
 

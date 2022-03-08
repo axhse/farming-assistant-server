@@ -1,9 +1,9 @@
 import re
 
 
-class AccountUtils:    # TESTED OK
+class AccountUtils:    # Tested OK
 
-    DEFAULT_CUSTOMER_INFO = "{}"
+    DEFAULT_CUSTOMER_INFO = '{}'
 
     @staticmethod
     def customer_info_is_correct(customer_info):
@@ -18,11 +18,15 @@ class AccountUtils:    # TESTED OK
         return True
 
     @staticmethod
-    def field_is_correct(field):
-        field_keys = ['Location', 'CultivatedPlant', 'Name']
-        cultivated_plants = []
+    def field_is_correct(field):    # TODO: test
+        field_keys = ['Name', 'Location', 'PlantName', 'PlantingDate']
+        plant_names = ['Default', 'Carrot', 'Potato', 'Wheat']
         if not AccountUtils.verify_json(field, field_keys):
             return False
+        if field['Name'] is not None:
+            if not (type(field['Name']) is str and len(field['Name']) <= 50
+                    and re.search(r'[^a-zA-Z0-9]', field['Name']) is None):    # FIXME: extend avoiding SQL-injection
+                return False
         if field['Location'] is not None:
             print(type(field['Location']))
             if type(field['Location']) is not str:
@@ -36,12 +40,11 @@ class AccountUtils:    # TESTED OK
                         return False
                 except ValueError:
                     return False
-        if field['CultivatedPlant'] is not None:
-            if type(field['CultivatedPlant']) is not str or field['CultivatedPlant'] not in cultivated_plants:
+        if field['PlantName'] is not None:
+            if type(field['PlantName']) is not str or field['PlantName'] not in plant_names:
                 return False
-        if field['Name'] is not None:
-            if not (type(field['Name']) is str and len(field['Name']) <= 50
-                    and re.search(r'[^a-zA-Z0-9]', field['Name']) is None):    # FIXME: extend avoiding SQL-injection
+        if field['PlantingDate'] is not None:
+            if type(field['PlantingDate']) is not int:
                 return False
         return True
 

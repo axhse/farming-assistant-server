@@ -4,7 +4,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
 
 
-class CryptoUtils:    # TESTED OK
+class CryptoUtils:    # Tested OK
 
     @staticmethod
     def encrypt_rsa(byte_data, rsa_public_key):
