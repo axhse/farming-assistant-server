@@ -35,14 +35,10 @@ class FarmingAppServer:    # Tested OK
     @staticmethod
     def __handle_request(client):
         try:
-            rsa_key = client.recv(270)
-            FarmingAppServer.__generate_new_aes()
-            client.send(CryptoUtils.encrypt_rsa(FarmingAppServer.__aes_key, rsa_key))
-            client.send(CryptoUtils.encrypt_rsa(FarmingAppServer.__aes_iv, rsa_key))
-            token = FarmingAppServer.__decrypt_aes_and_decode(client.recv(64))
-            request = json.loads(FarmingAppServer.__decrypt_aes_and_decode(client.recv(50000)))
+            token = FarmingAppServer.__decode(client.recv(64))
+            request = json.loads(FarmingAppServer.__decode(client.recv(50000)))
             response = FarmingAppServer.__create_response(request, token)
-            client.send(FarmingAppServer.__encode_and_encrypt_aes(response.to_json()))
+            client.send(FarmingAppServer.__encode(response.to_json()))
         except:
             pass
         finally:
@@ -117,6 +113,14 @@ class FarmingAppServer:    # Tested OK
     def __generate_new_aes():
         FarmingAppServer.__aes_key = CryptoUtils.get_random_bytes(32)
         FarmingAppServer.__aes_iv = CryptoUtils.get_random_bytes(16)
+
+    @staticmethod
+    def __encode(data):
+        return data.encode('utf-8')
+
+    @staticmethod
+    def __decode(data):
+        return data.decode('utf-8')
 
     @staticmethod
     def __encode_and_encrypt_aes(data):

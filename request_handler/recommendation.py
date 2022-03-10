@@ -14,7 +14,7 @@ class RecommendationMaker:    # TODO
 
         recommendations = []
         latitude, longitude = map(float, target_field['Location'].split())
-        weather_list = WeatherAPI.get_all(Location(latitude, longitude))
+        weather_list = WeatherAPI.get_all_simple(Location(latitude, longitude))
         weather = WeatherForecaster.get_forecast(weather_list)
         plant = target_field['PlantName']
         planting_date = target_field['PlantingDate']    # unix timestamp
