@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
@@ -80,10 +81,7 @@ namespace App.Models
                     ReceiveTimeout = StaticSettings.ConfigVariables.ReceivingTimeout
                 };
                 _socket.Connect(StaticSettings.ConfigVariables.ServerUrl, StaticSettings.ConfigVariables.ServerPort);
-                
-                Send(_cryptoUtils.RsaPublicKey);
-                _cryptoUtils.AesKey = _cryptoUtils.DecryptRsa(Receive(256));
-                _cryptoUtils.AesIV = _cryptoUtils.DecryptRsa(Receive(256));
+                Console.WriteLine();
                 Send(EncodeAndEncryptAes(AuthToken));
                 return true;
             }
@@ -100,9 +98,9 @@ namespace App.Models
             return data;
         }
 
-        private byte[] EncryptRsa(byte[] data) => _cryptoUtils.EncryptRsa(data);
-        private byte[] EncryptAes(byte[] data) => _cryptoUtils.EncryptAes(data);
-        private byte[] DecryptAes(byte[] data) => _cryptoUtils.DecryptAes(data);
+        private byte[] EncryptRsa(byte[] data) => data;
+        private byte[] EncryptAes(byte[] data) => data;
+        private byte[] DecryptAes(byte[] data) => data;
 
         private byte[] EncodeAndEncryptAes(string data) => EncryptAes(Encoding.UTF8.GetBytes(data ?? string.Empty));
         private string DecryptAesAndDecode(byte[] data)

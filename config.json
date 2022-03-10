@@ -1,6 +1,6 @@
 {
-  "ServerUrl": "farming-assistant.westeurope.cloudapp.azure.com",
-  "ServerPort": 80,
+  "ServerUrl": "farming-assistant.eastus.cloudapp.azure.com",
+  "ServerPort": 8000,
   "DefaultToken": "0000000000000000000000000000000000000000000000000000000000000000",
   "SendingTimeout": 5000,
   "ReceivingTimeout": 5000,
