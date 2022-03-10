@@ -1,6 +1,10 @@
 {
   "ServerUrl": "farming-assistant.eastus.cloudapp.azure.com",
+<<<<<<< HEAD
   "ServerPort": 8000,
+=======
+  "ServerPort": 80,
+>>>>>>> 17e49fb7807a343a8e4ccb6fe1c99de5635f5627
   "DefaultToken": "0000000000000000000000000000000000000000000000000000000000000000",
   "SendingTimeout": 5000,
   "ReceivingTimeout": 5000,
