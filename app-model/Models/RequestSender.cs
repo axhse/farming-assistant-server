@@ -63,7 +63,7 @@ namespace App.Models
             if (!TryConnect()) { return new Response("ConnectionError"); }
             try
             {
-                Send(EncodeAndEncryptAes(JsonSerializer.Serialize((dynamic)request)));
+                Send(EncodeAndEncryptAes(request.ToJson()));
                 Response response = JsonSerializer.Deserialize<Response>(DecryptAesAndDecode(Receive(50000)));
                 if (response.NewAuthToken != string.Empty) { AuthToken = response.NewAuthToken; }
                 return response;

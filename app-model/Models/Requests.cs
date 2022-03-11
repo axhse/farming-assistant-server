@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace App.Models
 {
@@ -32,6 +33,8 @@ namespace App.Models
     public abstract class Request
     {
         public string Type { get; init; }
+
+        public abstract string ToJson();
     }
 
     public class SignUpRequest : Request
@@ -44,6 +47,8 @@ namespace App.Models
         }
         public string Username { get; init; }
         public string Password { get; init; }
+
+        public override string ToJson() => JsonSerializer.Serialize(this);
     }
 
     public class SignInRequest : Request
@@ -56,6 +61,8 @@ namespace App.Models
         }
         public string Username { get; init; }
         public string Password { get; init; }
+
+        public override string ToJson() => JsonSerializer.Serialize(this);
     }
 
     public class GetCustomerInfoRequest : Request
@@ -64,6 +71,8 @@ namespace App.Models
         {
             Type = nameof(GetCustomerInfoRequest);
         }
+
+        public override string ToJson() => JsonSerializer.Serialize(this);
     }
 
     public class UpdateCustomerInfoRequest : Request
@@ -74,6 +83,8 @@ namespace App.Models
             CustomerInfo = customerInfo;
         }
         public CustomerInfo CustomerInfo { get; init; }
+
+        public override string ToJson() => JsonSerializer.Serialize(this);
     }
 
     public class GetRecommendationsRequest : Request
@@ -84,5 +95,7 @@ namespace App.Models
             TargetField = targetField;
         }
         public Field TargetField { get; init; }
+
+        public override string ToJson() => JsonSerializer.Serialize(this);
     }
 }
