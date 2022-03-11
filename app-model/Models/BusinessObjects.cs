@@ -50,12 +50,12 @@ namespace App.Models
         public Plants Plant { get; set; }
         public string PlantName
         {
-            get => Enum.GetName(Plant);
+            get => Enum.GetName(typeof(Plants), Plant);
             set
             {
                 foreach (Plants plant in Enum.GetValues(typeof(Plants)))
                 {
-                    if (Enum.GetName(plant) == value)
+                    if (Enum.GetName(typeof(Plants), plant) == value)
                     {
                         Plant = plant;
                         return;
