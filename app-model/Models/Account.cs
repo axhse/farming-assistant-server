@@ -22,6 +22,7 @@ namespace App.Models
         public event Action OnUsernameChanged;
         public event Action OnCustomerInfoChanged;
 
+        public bool IsAuthorized => Username is not null;
         public string Username
         {
             get => _username;
