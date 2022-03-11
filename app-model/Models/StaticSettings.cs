@@ -8,7 +8,16 @@ namespace App.Models
         public static readonly string ConfigFilePath = "config.json";
         public static readonly string AccountDataPath = "AccountData.json";
 
-        public static ConfigVariables ConfigVariables { get; private set; } = ConfigVariables.LoadFromFile();
+        public static ConfigVariables ConfigVariables = new()
+        {
+            ServerUrl = "farming-assistant.eastus.cloudapp.azure.com",
+            ServerPort = 80,
+            DefaultToken = "0000000000000000000000000000000000000000000000000000000000000000",
+            SendingTimeout = 5000,
+            ReceivingTimeout = 5000,
+            FieldListLimitSize = 100
+        };
+        // public static ConfigVariables ConfigVariables { get; private set; } = ConfigVariables.LoadFromFile();
     }
 
     public class ConfigVariables
