@@ -1,7 +1,6 @@
 .idea/
 __pycache__/
 venv/
-Crypto/
 .env
 
 test.py
