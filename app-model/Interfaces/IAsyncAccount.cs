@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace App.Models
 {
     public interface IAsyncAccount
     {
+        event Action OnUsernameChanged;
+        event Action OnCustomerInfoChanged;
+
         string Username { get; }
         CustomerInfo CustomerInfo { get; }
 

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace App.Models
 {
     public interface ICustomerInfo
     {
+        event Action OnFieldsChanged;
         List<Field> Fields { get; set; }
         public void AddField(Field field);
         public void DeleteField(Field field);

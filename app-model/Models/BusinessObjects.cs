@@ -9,7 +9,9 @@ namespace App.Models
     {
         Default,
         Carrot,
+        Corn,
         Potato,
+        Tomato,
         Wheat
     }
 

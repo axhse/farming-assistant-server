@@ -9,6 +9,8 @@ namespace App.Models
     {
         private readonly RequestSender _requestSender;
         private readonly Dictionary<Field, Recommendation[]> _recommendations;
+        private string _username;
+        private CustomerInfo _customerInfo;
 
         public Account()
         {
@@ -17,8 +19,30 @@ namespace App.Models
             CustomerInfo = new CustomerInfo();
         }
 
-        public string Username { get; protected set; }
-        public CustomerInfo CustomerInfo { get; protected set; } = new CustomerInfo();
+        public event Action OnUsernameChanged;
+        public event Action OnCustomerInfoChanged;
+
+        public string Username
+        {
+            get => _username;
+            protected set
+            {
+                _username = value;
+                OnUsernameChanged?.Invoke();
+            }
+
+        }
+
+        public CustomerInfo CustomerInfo
+        {
+            get => _customerInfo;
+            protected set
+            {
+                _customerInfo = value;
+                OnCustomerInfoChanged?.Invoke();
+            }
+        }
+
         public string AuthToken
         {
             get => _requestSender.AuthToken;
