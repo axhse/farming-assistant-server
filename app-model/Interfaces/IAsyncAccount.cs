@@ -8,6 +8,7 @@ namespace App.Models
         event Action OnUsernameChanged;
         event Action OnCustomerInfoChanged;
 
+        bool IsAuthorized { get; }
         string Username { get; }
         CustomerInfo CustomerInfo { get; }
 
