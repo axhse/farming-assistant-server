@@ -7,12 +7,20 @@ namespace App.Models
 {
     public enum Plants
     {
-        Default,
+        None,
         Carrot,
         Corn,
         Potato,
         Tomato,
         Wheat
+    }
+
+    public enum RecommendationType
+    {
+        None,
+        Fertilizing,
+        Harvest,
+        Watering
     }
 
     public class CustomerInfo : ICustomerInfo
@@ -29,7 +37,7 @@ namespace App.Models
             get => new(_fields);
             set
             {
-                
+
                 if (value is null) { throw new ArgumentNullException(nameof(value)); }
                 if (value.Count > StaticSettings.ConfigVariables.FieldListLimitSize)
                 {
@@ -77,8 +85,36 @@ namespace App.Models
     public class Field : IField
     {
         private string _name;
+        private double _latitude, _longitude;
 
-        public string Location { get; set; }
+        /// <exception cref="ArgumentException"/>
+        public double Latitude
+        {
+            get => _latitude;
+            set
+            {
+                if (value < -90 || 90 < value)
+                {
+                    throw new ArgumentException($"{nameof(value)} is out of valid interval."); 
+                }
+                _latitude = value;
+            }
+        }
+
+
+        /// <exception cref="ArgumentException"/>
+        public double Longitude
+        {
+            get => _longitude;
+            set
+            {
+                if (value < -180 || 180 < value)
+                {
+                    throw new ArgumentException($"{nameof(value)} is out of valid interval.");
+                }
+                _longitude = value;
+            }
+        }
 
         [JsonIgnore]
         public Plants Plant { get; set; }
@@ -95,7 +131,7 @@ namespace App.Models
                         return;
                     }
                 }
-                Plant = Plants.Default;
+                Plant = Plants.None;
             }
         }
 
@@ -121,7 +157,24 @@ namespace App.Models
 
     public class Recommendation : IRecommendation
     {
-        public string Type { get; init; }    // TODO: enum ?
+        [JsonIgnore]
+        public RecommendationType Type { get; init; }
+        public string TypeName
+        {
+            get => Enum.GetName(typeof(RecommendationType), Type);
+            init
+            {
+                foreach (RecommendationType type in Enum.GetValues(typeof(RecommendationType)))
+                {
+                    if (Enum.GetName(typeof(RecommendationType), type) == value)
+                    {
+                        Type = type;
+                        return;
+                    }
+                }
+                Type = RecommendationType.None;
+            }
+        }
         public string Value { get; init; }
         public long RelevanceLimitTimestamp { get; init; }
 
