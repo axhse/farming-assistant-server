@@ -4,7 +4,7 @@ namespace App.Models
 {
     public interface ICustomerInfo
     {
-        List<Field> Fields { get; init; }
+        List<Field> Fields { get; set; }
         public void AddField(Field field);
         public void DeleteField(Field field);
     }

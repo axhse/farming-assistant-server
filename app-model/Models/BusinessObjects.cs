@@ -15,26 +15,58 @@ namespace App.Models
 
     public class CustomerInfo : ICustomerInfo
     {
-        public List<Field> _fields = new();
+        private List<Field> _fields = new();
+
+        public event Action OnFieldsChanged;
+
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="InvalidOperationException"/>
         public List<Field> Fields
         {
             get => new(_fields);
-            init => _fields = value;
+            set
+            {
+                
+                if (value is null) { throw new ArgumentNullException(nameof(value)); }
+                if (value.Count > StaticSettings.ConfigVariables.FieldListLimitSize)
+                {
+                    throw new InvalidOperationException("List size limit exceeded.");
+                }
+                foreach (var field in value)
+                {
+                    if (field is null)
+                    {
+                        throw new ArgumentException("Some field is null.");
+                    }
+                }
+                _fields = value;
+                OnFieldsChanged?.Invoke();
+            }
         }
 
+        /// <exception cref="ArgumentNullException"/>
         /// <exception cref="InvalidOperationException"/>
         public void AddField(Field field)
         {
             if (!FieldAddingIsPossible)
             {
+                Console.WriteLine(Fields);
+                Fields = null;
                 throw new InvalidOperationException("List size limit exceeded.");
             }
+            if (field is null)
+            {
+                throw new ArgumentNullException(nameof(field));
+            }
             _fields.Add(field);
+            OnFieldsChanged?.Invoke();
         }
 
         public void DeleteField(Field field)
         {
             _fields.Remove(field);
+            OnFieldsChanged?.Invoke();
         }
 
         private bool FieldAddingIsPossible => Fields.Count < StaticSettings.ConfigVariables.FieldListLimitSize;
