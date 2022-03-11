@@ -19,27 +19,20 @@ class AccountUtils:    # Tested OK
 
     @staticmethod
     def field_is_correct(field):    # TODO: test
-        field_keys = ['Name', 'Location', 'PlantName', 'PlantingDate']
-        plant_names = ['Default', 'Carrot', 'Potato', 'Wheat']
+        field_keys = ['Name', 'Latitude', 'Longitude', 'PlantName', 'PlantingDate']
+        plant_names = ['None', 'Carrot', 'Corn', 'Potato', 'Tomato', 'Wheat']
         if not AccountUtils.verify_json(field, field_keys):
             return False
         if field['Name'] is not None:
             if not (type(field['Name']) is str and len(field['Name']) <= 50
-                    and re.search(r'[^a-zA-Z0-9]', field['Name']) is None):    # FIXME: extend avoiding SQL-injection
+                    and re.search(r'[\'\"\\/\f\n\r\t]', field['Name']) is None):
                 return False
-        if field['Location'] is not None:
-            print(type(field['Location']))
-            if type(field['Location']) is not str:
+        if field['Latitude'] is not None:
+            if type(field['Latitude']) is not float or not (-90 <= field['Latitude'] <= 90):
                 return False
-            else:
-                coordinates = field['Location'].split()
-                if len(coordinates) != 2:
-                    return False
-                try:
-                    if not (-180 <= float(coordinates[0]) <= 180 and -90 <= float(coordinates[1]) <= 90):
-                        return False
-                except ValueError:
-                    return False
+        if field['Longitude'] is not None:
+            if type(field['Longitude']) is not float or not (-180 <= field['Longitude'] <= 180):
+                return False
         if field['PlantName'] is not None:
             if type(field['PlantName']) is not str or field['PlantName'] not in plant_names:
                 return False
