@@ -18,7 +18,7 @@ class AccountUtils:    # Tested OK
         return True
 
     @staticmethod
-    def field_is_correct(field):    # TODO: test
+    def field_is_correct(field):
         field_keys = ['Name', 'Latitude', 'Longitude', 'PlantName', 'PlantingDate']
         plant_names = ['None', 'Carrot', 'Corn', 'Potato', 'Tomato', 'Wheat']
         if not AccountUtils.verify_json(field, field_keys):
@@ -28,10 +28,10 @@ class AccountUtils:    # Tested OK
                     and re.search(r'[\'\"\\/\f\n\r\t]', field['Name']) is None):
                 return False
         if field['Latitude'] is not None:
-            if type(field['Latitude']) is not float or not (-90 <= field['Latitude'] <= 90):
+            if type(field['Latitude']) not in [int, float] or not (-90 <= field['Latitude'] <= 90):
                 return False
         if field['Longitude'] is not None:
-            if type(field['Longitude']) is not float or not (-180 <= field['Longitude'] <= 180):
+            if type(field['Longitude']) not in [int, float] or not (-180 <= field['Longitude'] <= 180):
                 return False
         if field['PlantName'] is not None:
             if type(field['PlantName']) is not str or field['PlantName'] not in plant_names:

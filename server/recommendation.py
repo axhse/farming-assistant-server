@@ -3,7 +3,7 @@ from weather import Location, WeatherAPI
 from weather_forecaster import WeatherForecaster
 
 
-class RecommendationMaker:    # TODO
+class RecommendationMaker:    # TODO: Test
 
     RECOMMENDATION_TYPES = ['Watering', 'Fertilizing', 'Harvest']
     # 86 400 seconds = 1 day
@@ -14,8 +14,9 @@ class RecommendationMaker:    # TODO
         if target_field['PlantName'] == 'Default':
             return []
         recommendations = []
-        latitude, longitude = target_field['Latitude'], target_field['Longitude']
-        weather_list = WeatherAPI.get_all_simple_predictions(Location(latitude, longitude))
+
+        location = Location(target_field['Latitude'], target_field['Longitude'])
+        weather_list = WeatherAPI.get_all_simple_predictions(location)
         weather = WeatherForecaster.get_forecast(weather_list)
         temperature = weather.temperature
         humidity = weather.humidity
@@ -34,7 +35,8 @@ class RecommendationMaker:    # TODO
                                 'Wheat': 115}
         if time() - planting_date > minimal_harvest_days[plant] * 86400:    # Harvest
             recommendation_type = 'Harvest'
-            recommendation_value = f'Harvest in {minimal_harvest_days}-{maximum_harvest_days} days after planting.'
+            recommendation_value = f'Harvest in {minimal_harvest_days[plant]}-{maximum_harvest_days[plant]}' \
+                f' days after planting.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 
@@ -43,9 +45,8 @@ class RecommendationMaker:    # TODO
                           'Potato': 0.1,
                           'Tomato': 0.8,
                           'Wheat': 0}
-
         watering_needs = watering_rates[plant] * (1 + 0.1 * max(temperature - 20, 0) - 0.01 * humidity)
-        if watering_needs > 0.2:
+        if watering_needs > 0.2:    # Watering
             recommendation_type = 'Watering'
             if 0.2 < watering_needs <= 0.5:
                 recommendation_value = 'Small watering is necessary.'
@@ -68,7 +69,7 @@ class RecommendationMaker:    # TODO
                                'Potato': 30,
                                'Tomato': 20,
                                'Wheat': 7}
-        if time() - planting_date < active_fertilizing_periods[plant] * 86400 and humidity > 40:    # Fertilizing
+        if time() - planting_date < active_fertilizing_periods[plant] * 86400 and humidity > 30:    # Fertilizing
             recommendation_type = 'Fertilizing'
             recommendation_value = 'Fertilize a lot.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
@@ -84,8 +85,8 @@ class RecommendationMaker:    # TODO
 
 class Recommendation:
 
-    def __init__(self, recommendation_type: str, value: str, relevance_limit_timestamp: int):
-        self.Type = recommendation_type
+    def __init__(self, recommendation_type_name: str, value: str, relevance_limit_timestamp: int):
+        self.TypeName = recommendation_type_name
         self.Value = value
         self.RelevanceLimitTimestamp = relevance_limit_timestamp
 

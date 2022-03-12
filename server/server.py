@@ -82,7 +82,7 @@ class FarmingAppServer:    # Tested OK
             if request['Type'] == 'GetRecommendationsRequest':    # TODO: verify subscription
                 if AccountUtils.field_is_correct(request['TargetField']):
                     recommendations = RecommendationMaker.get_recommendations(request['TargetField'])
-                    response.Parameter = [r.get_object_dict() for r in recommendations]    # TODO: test
+                    response.Parameter = json.dumps([r.get_object_dict() for r in recommendations])
                 else:
                     response.Errors = ['InvalidFieldError']
 
@@ -143,7 +143,7 @@ class FarmingAppServer:    # Tested OK
 
 
 class Response:
-    def __init__(self, errors=None, parameter=None, token=None):
+    def __init__(self, errors=None, parameter: str = None, token: str = None):
         if type(errors) == list:
             self.Errors = errors
         elif type(errors) == str:

@@ -63,7 +63,7 @@ class WeatherAPI:
         result = []
         for get_weather in get_weather_methods:
             weather = get_weather(location)
-            if not allow_none:
+            if weather is None and not allow_none:
                 continue
             result.append(weather)
         return result
