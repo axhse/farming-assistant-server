@@ -74,7 +74,14 @@ namespace App.Models
         public async Task<string[]> LoadRecommendationsAsync(Field field) =>
             await Task.Run(() => LoadRecommendations(field));
 
-        public Recommendation[] GetRecommendations(Field field) => _recommendations[field];
+        public Recommendation[] GetRecommendations(Field field)
+        {
+            if (_recommendations.ContainsKey(field))
+            {
+                return _recommendations[field];
+            }
+            return Array.Empty<Recommendation>();
+        }
 
         private string[] SignUp(string username, string password)
         {
