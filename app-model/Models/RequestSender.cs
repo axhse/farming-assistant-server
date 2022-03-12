@@ -81,7 +81,6 @@ namespace App.Models
                     ReceiveTimeout = StaticSettings.ConfigVariables.ReceivingTimeout
                 };
                 _socket.Connect(StaticSettings.ConfigVariables.ServerUrl, StaticSettings.ConfigVariables.ServerPort);
-                Console.WriteLine();
                 Send(EncodeAndEncryptAes(AuthToken));
                 return true;
             }
