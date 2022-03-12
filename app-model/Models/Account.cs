@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -19,9 +20,18 @@ namespace App.Models
             CustomerInfo = new CustomerInfo();
         }
 
+        [JsonConstructor]
+        public Account(string username, CustomerInfo customerInfo, string authToken) : this()
+        {
+            Username = username;
+            CustomerInfo = customerInfo;
+            AuthToken = authToken;
+        }
+
         public event Action OnUsernameChanged;
         public event Action OnCustomerInfoChanged;
 
+        [JsonIgnore]
         public bool IsAuthorized => Username is not null;
         public string Username
         {

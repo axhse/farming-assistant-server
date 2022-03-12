@@ -152,7 +152,7 @@ namespace App.Models
         }
 
         private static bool NameIsCorrect(string name) => name == null
-                || (name.Length <= 50 && !new Regex(@"[^a-zA-Z0-9]").IsMatch(name));
+                || (name.Length <= 50 && !new Regex(@"['""\\/\f\n\r\t]").IsMatch(name));
     }
 
     public class Recommendation : IRecommendation
