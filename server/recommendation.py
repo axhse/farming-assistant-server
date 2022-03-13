@@ -2,6 +2,7 @@
 from time import time
 from weather import Location, WeatherAPI
 from weather_forecaster import WeatherForecaster
+from account_utils import AccountUtils
 
 
 class RecommendationMaker:    # TODO: Test
@@ -12,12 +13,13 @@ class RecommendationMaker:    # TODO: Test
 
     @staticmethod
     def get_recommendations(target_field):
-        plant = target_field['PlantName']
-        planting_date = target_field['PlantingDate']    # unix timestamp
-        if plant in [None, 'None']:
+        if not AccountUtils.field_is_correct(target_field, contains_all_keys=True)\
+                or target_field['PlantName'] in [None, 'None']:
             return []
         recommendations = []
 
+        plant = target_field['PlantName']
+        planting_date = target_field['PlantingDate']    # unix timestamp
         location = Location(target_field['Latitude'], target_field['Longitude'])
         weather_list = WeatherAPI.get_all_simple_predictions(location)
         weather = WeatherForecaster.get_forecast(weather_list)
@@ -36,8 +38,8 @@ class RecommendationMaker:    # TODO: Test
                                 'Wheat': 115}
         if time() - planting_date > minimal_harvest_days[plant] * 86400:    # Harvest
             recommendation_type = 'Harvest'
-            recommendation_value = f'Нужно собрать урожай в течение {minimal_harvest_days[plant]}-{maximum_harvest_days[plant]}' \
-                f' дней после посадки.'
+            recommendation_value = f'Нужно собрать урожай в течение {minimal_harvest_days[plant]}-' \
+                f'{maximum_harvest_days[plant]} дней после посадки.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 

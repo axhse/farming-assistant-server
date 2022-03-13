@@ -19,10 +19,10 @@ class AccountUtils:    # Tested OK
         return True
 
     @staticmethod
-    def field_is_correct(field):
+    def field_is_correct(field, contains_all_keys=False):
         field_keys = ['Name', 'Latitude', 'Longitude', 'PlantName', 'PlantingDate']
         plant_names = ['None', 'Carrot', 'Corn', 'Potato', 'Tomato', 'Wheat']
-        if not AccountUtils.verify_json(field, field_keys):
+        if not AccountUtils.verify_json(field, field_keys, contains_all_keys):
             return False
         if 'Name' in field.keys() and field['Name'] is not None:
             if not (type(field['Name']) is str and len(field['Name']) <= 50
