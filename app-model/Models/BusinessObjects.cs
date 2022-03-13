@@ -61,8 +61,6 @@ namespace App.Models
         {
             if (!FieldAddingIsPossible)
             {
-                Console.WriteLine(Fields);
-                Fields = null;
                 throw new InvalidOperationException("List size limit exceeded.");
             }
             if (field is null)
