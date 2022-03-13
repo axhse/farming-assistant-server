@@ -23,7 +23,7 @@ namespace App.Models
         Watering
     }
 
-    public class CustomerInfo : ICustomerInfo
+    public class CustomerInfo
     {
         private List<Field> _fields = new();
 
@@ -80,7 +80,7 @@ namespace App.Models
         private bool FieldAddingIsPossible => Fields.Count < StaticSettings.ConfigVariables.FieldListLimitSize;
     }
 
-    public class Field : IField
+    public class Field
     {
         private string _name;
         private double _latitude, _longitude;
@@ -153,7 +153,7 @@ namespace App.Models
                 || (name.Length <= 50 && !new Regex(@"['""\\/\f\n\r\t]").IsMatch(name));
     }
 
-    public class Recommendation : IRecommendation
+    public class Recommendation
     {
         [JsonIgnore]
         public RecommendationTypes Type { get; init; }

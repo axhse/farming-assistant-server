@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace App.Models
 {
-    public class Account : IAsyncAccount
+    public class Account
     {
         private readonly RequestSender _requestSender;
         private readonly RecommendationStore _recommendationStore;
@@ -74,7 +74,12 @@ namespace App.Models
         public async Task<string[]> LoadRecommendationsAsync(Field field) =>
             await Task.Run(() => LoadRecommendations(field));
         public async Task<string[]> LoadAllRecommendationsAsync() =>
-            await Task.Run(() => LoadRecommendations(CustomerInfo.Fields.ToArray()));
+            await Task.Run(() => LoadAllRecommendations());
+
+        public string[] LoadRecommendations(Field field)
+                => LoadRecommendations(new Field[] { field });
+        public string[] LoadAllRecommendations()
+                => LoadRecommendations(CustomerInfo.Fields.ToArray());
 
         public Recommendation[] GetRecommendations(Field field)
                 => _recommendationStore.GetRecommendations(field);
@@ -141,8 +146,5 @@ namespace App.Models
             }
             return Array.Empty<string>();
         }
-
-        private string[] LoadRecommendations(Field field)
-                => LoadRecommendations(new Field[] { field });
     }
 }
