@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from time import time
 from weather import Location, WeatherAPI
 from weather_forecaster import WeatherForecaster
@@ -11,7 +12,9 @@ class RecommendationMaker:    # TODO: Test
 
     @staticmethod
     def get_recommendations(target_field):
-        if target_field['PlantName'] == 'Default':
+        plant = target_field['PlantName']
+        planting_date = target_field['PlantingDate']    # unix timestamp
+        if plant in [None, 'None']:
             return []
         recommendations = []
 
@@ -20,8 +23,6 @@ class RecommendationMaker:    # TODO: Test
         weather = WeatherForecaster.get_forecast(weather_list)
         temperature = weather.temperature
         humidity = weather.humidity
-        plant = target_field['PlantName']
-        planting_date = target_field['PlantingDate']    # unix timestamp
 
         minimal_harvest_days = {'Carrot': 80,
                                 'Corn': 90,
@@ -35,8 +36,8 @@ class RecommendationMaker:    # TODO: Test
                                 'Wheat': 115}
         if time() - planting_date > minimal_harvest_days[plant] * 86400:    # Harvest
             recommendation_type = 'Harvest'
-            recommendation_value = f'Harvest in {minimal_harvest_days[plant]}-{maximum_harvest_days[plant]}' \
-                f' days after planting.'
+            recommendation_value = f'Нужно собрать урожай в течение {minimal_harvest_days[plant]}-{maximum_harvest_days[plant]}' \
+                f' дней после посадки.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 
@@ -49,13 +50,13 @@ class RecommendationMaker:    # TODO: Test
         if watering_needs > 0.2:    # Watering
             recommendation_type = 'Watering'
             if 0.2 < watering_needs <= 0.5:
-                recommendation_value = 'Small watering is necessary.'
+                recommendation_value = 'Полейте немного.'
             elif 0.5 < watering_needs <= 1:
-                recommendation_value = 'Medium watering is necessary.'
+                recommendation_value = 'Полейте средне.'
             elif 1 < watering_needs < 2:
-                recommendation_value = 'Active watering is necessary.'
+                recommendation_value = 'Полейте сильно.'
             else:    # 2 < watering_needs
-                recommendation_value = 'Massive watering is necessary.'
+                recommendation_value = 'Полейте очень сильно.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 
@@ -71,12 +72,12 @@ class RecommendationMaker:    # TODO: Test
                                'Wheat': 7}
         if time() - planting_date < active_fertilizing_periods[plant] * 86400 and humidity > 30:    # Fertilizing
             recommendation_type = 'Fertilizing'
-            recommendation_value = 'Fertilize a lot.'
+            recommendation_value = 'Нужно много удобрений.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
         elif time() - planting_date < fertilizing_periods[plant] * 86400 and humidity > 60:
             recommendation_type = 'Fertilizing'
-            recommendation_value = 'Fertilize a little.'
+            recommendation_value = 'Нужно немного удобрений.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 

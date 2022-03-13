@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pyodbc
 import json
 from os import environ

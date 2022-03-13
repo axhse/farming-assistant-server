@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from random import randint, choice
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP

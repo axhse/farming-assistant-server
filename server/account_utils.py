@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 
 
@@ -23,26 +24,26 @@ class AccountUtils:    # Tested OK
         plant_names = ['None', 'Carrot', 'Corn', 'Potato', 'Tomato', 'Wheat']
         if not AccountUtils.verify_json(field, field_keys):
             return False
-        if field['Name'] is not None:
+        if 'Name' in field.keys() and field['Name'] is not None:
             if not (type(field['Name']) is str and len(field['Name']) <= 50
                     and re.search(r'[\'\"\\/\f\n\r\t]', field['Name']) is None):
                 return False
-        if field['Latitude'] is not None:
+        if 'Latitude' in field.keys():
             if type(field['Latitude']) not in [int, float] or not (-90 <= field['Latitude'] <= 90):
                 return False
-        if field['Longitude'] is not None:
+        if 'Longitude' in field.keys():
             if type(field['Longitude']) not in [int, float] or not (-180 <= field['Longitude'] <= 180):
                 return False
-        if field['PlantName'] is not None:
+        if 'PlantName' in field.keys() and field['PlantName'] is not None:
             if type(field['PlantName']) is not str or field['PlantName'] not in plant_names:
                 return False
-        if field['PlantingDate'] is not None:
+        if 'PlantingDate' in field.keys():
             if type(field['PlantingDate']) is not int:
                 return False
         return True
 
     @staticmethod
-    def verify_json(data, allowed_keys, contains_all_allowed=True):
+    def verify_json(data, allowed_keys, contains_all_allowed=False):
         if not type(data) is dict:
             return False
         for key in data.keys():
