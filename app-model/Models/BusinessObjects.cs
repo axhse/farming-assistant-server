@@ -15,7 +15,7 @@ namespace App.Models
         Wheat
     }
 
-    public enum RecommendationType
+    public enum RecommendationTypes
     {
         None,
         Fertilizing,
@@ -158,21 +158,21 @@ namespace App.Models
     public class Recommendation : IRecommendation
     {
         [JsonIgnore]
-        public RecommendationType Type { get; init; }
+        public RecommendationTypes Type { get; init; }
         public string TypeName
         {
-            get => Enum.GetName(typeof(RecommendationType), Type);
+            get => Enum.GetName(typeof(RecommendationTypes), Type);
             init
             {
-                foreach (RecommendationType type in Enum.GetValues(typeof(RecommendationType)))
+                foreach (RecommendationTypes type in Enum.GetValues(typeof(RecommendationTypes)))
                 {
-                    if (Enum.GetName(typeof(RecommendationType), type) == value)
+                    if (Enum.GetName(typeof(RecommendationTypes), type) == value)
                     {
                         Type = type;
                         return;
                     }
                 }
-                Type = RecommendationType.None;
+                Type = RecommendationTypes.None;
             }
         }
         public string Value { get; init; }

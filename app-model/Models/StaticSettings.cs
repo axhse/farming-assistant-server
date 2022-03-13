@@ -14,7 +14,8 @@ namespace App.Models
             DefaultToken = "0000000000000000000000000000000000000000000000000000000000000000",
             SendingTimeout = 5000,
             ReceivingTimeout = 5000,
-            FieldListLimitSize = 100
+            FieldListLimitSize = 100,
+            RecommendationStoreUpdatingPeriod = 600
         };
 
         static StaticSettings()
@@ -40,6 +41,7 @@ namespace App.Models
         public int ReceivingTimeout { get; init; }
         public string DefaultToken { get; init; }
         public int FieldListLimitSize { get; init; }
+        public int RecommendationStoreUpdatingPeriod { get; init; }
 
         public static ConfigVariables LoadFromFile() =>
             JsonSerializer.Deserialize<ConfigVariables>(File.ReadAllText(StaticSettings.ConfigFilePath));

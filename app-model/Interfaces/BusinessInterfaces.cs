@@ -22,7 +22,7 @@ namespace App.Models
 
     public interface IRecommendation
     {
-        RecommendationType Type { get; init; }
+        RecommendationTypes Type { get; init; }
         string Value { get; init; }
     }
 }

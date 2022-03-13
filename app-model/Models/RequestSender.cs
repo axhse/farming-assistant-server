@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
@@ -10,13 +9,11 @@ namespace App.Models
     {
         public static readonly string DefaultToken = StaticSettings.ConfigVariables.DefaultToken;
 
-        private readonly CryptoUtils _cryptoUtils;
         private Socket _socket;
         private string _authToken;
 
         public RequestSender()
         {
-            _cryptoUtils = new();
             AuthToken = DefaultToken;
         }
         public RequestSender(string authToken) : this() => AuthToken = authToken;
@@ -47,14 +44,14 @@ namespace App.Models
         public string[] UpdateCustomerInfo(CustomerInfo customerInfo)
             => SendRequest(new UpdateCustomerInfoRequest(customerInfo)).Errors;
 
-        public string[] GetRecommendations(Field targetField, out Recommendation[] recommendations)
+        public string[] GetRecommendations(Field[] targetFields, out Recommendation[][] recommendations)
         {
-            Response response = SendRequest(new GetRecommendationsRequest(targetField));
+            Response response = SendRequest(new GetRecommendationsRequest(targetFields));
             if (response.Errors.Length == 0)
             {
-                recommendations = JsonSerializer.Deserialize<Recommendation[]>(response.Parameter);
+                recommendations = JsonSerializer.Deserialize<Recommendation[][]>(response.Parameter);
             }
-            else { recommendations = Array.Empty<Recommendation>(); }
+            else { recommendations = Array.Empty<Recommendation[]>(); }
             return response.Errors;
         }
 
@@ -63,8 +60,8 @@ namespace App.Models
             if (!TryConnect()) { return new Response("ConnectionError"); }
             try
             {
-                Send(EncodeAndEncryptAes(request.ToJson()));
-                Response response = JsonSerializer.Deserialize<Response>(DecryptAesAndDecode(Receive(50000)));
+                Send(Encode(request.ToJson()));
+                Response response = JsonSerializer.Deserialize<Response>(Decode(Receive(50000)));
                 if (response.NewAuthToken != string.Empty) { AuthToken = response.NewAuthToken; }
                 return response;
             }
@@ -81,7 +78,7 @@ namespace App.Models
                     ReceiveTimeout = StaticSettings.ConfigVariables.ReceivingTimeout
                 };
                 _socket.Connect(StaticSettings.ConfigVariables.ServerUrl, StaticSettings.ConfigVariables.ServerPort);
-                Send(EncodeAndEncryptAes(AuthToken));
+                Send(Encode(AuthToken));
                 return true;
             }
             catch { return false; }
@@ -97,12 +94,7 @@ namespace App.Models
             return data;
         }
 
-        private byte[] EncryptRsa(byte[] data) => data;
-        private byte[] EncryptAes(byte[] data) => data;
-        private byte[] DecryptAes(byte[] data) => data;
-
-        private byte[] EncodeAndEncryptAes(string data) => EncryptAes(Encoding.UTF8.GetBytes(data ?? string.Empty));
-        private string DecryptAesAndDecode(byte[] data)
-            => Encoding.UTF8.GetString(DecryptAes(data ?? Array.Empty<byte>()));
+        private static byte[] Encode(string data) => Encoding.UTF8.GetBytes(data ?? string.Empty);
+        private static string Decode(byte[] data) => Encoding.UTF8.GetString(data ?? Array.Empty<byte>());
     }
 }

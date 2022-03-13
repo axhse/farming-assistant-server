@@ -9,14 +9,14 @@ namespace App.Models
     public class Account : IAsyncAccount
     {
         private readonly RequestSender _requestSender;
-        private readonly Dictionary<Field, Recommendation[]> _recommendations;
+        private readonly RecommendationStore _recommendationStore;
         private string _username;
         private CustomerInfo _customerInfo;
 
         public Account()
         {
             _requestSender = new RequestSender();
-            _recommendations = new();
+            _recommendationStore = new();
             CustomerInfo = new CustomerInfo();
         }
 
@@ -73,15 +73,11 @@ namespace App.Models
             await Task.Run(() => UpdateCustomerInfo());
         public async Task<string[]> LoadRecommendationsAsync(Field field) =>
             await Task.Run(() => LoadRecommendations(field));
+        public async Task<string[]> LoadAllRecommendationsAsync() =>
+            await Task.Run(() => LoadRecommendations(CustomerInfo.Fields.ToArray()));
 
         public Recommendation[] GetRecommendations(Field field)
-        {
-            if (_recommendations.ContainsKey(field))
-            {
-                return _recommendations[field];
-            }
-            return Array.Empty<Recommendation>();
-        }
+                => _recommendationStore.GetRecommendations(field);
 
         private string[] SignUp(string username, string password)
         {
@@ -117,40 +113,36 @@ namespace App.Models
 
         private string[] UpdateCustomerInfo() => _requestSender.UpdateCustomerInfo(CustomerInfo);
 
-        private string[] LoadRecommendations(Field field)
+        private string[] LoadRecommendations(Field[] fields)
         {
-            if (_recommendations.Count > StaticSettings.ConfigVariables.FieldListLimitSize * 1.1) { _recommendations.Clear(); }
-            bool updateRequired = true;
-            if (_recommendations.ContainsKey(field))
+            List<Field> loadFieldsList = new();
+            lock (fields)
             {
-                if (_recommendations[field].Length > 0)
+                foreach (var field in fields)
                 {
-                    updateRequired = false;
-                    foreach (Recommendation recommendation in _recommendations[field])
+                    if (_recommendationStore.ShouldLoad(field))
                     {
-                        if (!recommendation.IsRelevant)
-                        {
-                            updateRequired = true;
-                            break;
-                        }
+                        loadFieldsList.Add(field);
                     }
                 }
             }
-            else
+            if (loadFieldsList.Count > 0)
             {
-                _recommendations.Add(field, Array.Empty<Recommendation>());
-            }
-            if (updateRequired)
-            {
-                string[] getRecommendationsErrors =
-                    _requestSender.GetRecommendations(field, out Recommendation[] newRecommendations);
+                string[] getRecommendationsErrors = _requestSender.GetRecommendations(
+                        loadFieldsList.ToArray(), out Recommendation[][] newRecommendations);
                 if (getRecommendationsErrors.Length == 0)
                 {
-                    _recommendations[field] = newRecommendations;
+                    for (int n = 0; n < newRecommendations.Length; n++)
+                    {
+                        _recommendationStore.AddRecommendations(loadFieldsList[n], newRecommendations[n]);
+                    }
                 }
                 return getRecommendationsErrors;
             }
             return Array.Empty<string>();
         }
+
+        private string[] LoadRecommendations(Field field)
+                => LoadRecommendations(new Field[] { field });
     }
 }

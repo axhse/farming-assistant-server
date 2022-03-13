@@ -89,12 +89,15 @@ namespace App.Models
 
     public class GetRecommendationsRequest : Request
     {
-        public GetRecommendationsRequest(Field targetField)
+        public GetRecommendationsRequest(Field[] targetFields)
         {
             Type = nameof(GetRecommendationsRequest);
-            TargetField = targetField;
+            TargetFields = targetFields;
         }
-        public Field TargetField { get; init; }
+        public GetRecommendationsRequest(Field targetField)
+                : this(new Field[] { targetField }) { }
+
+        public Field[] TargetFields { get; init; }
 
         public override string ToJson() => JsonSerializer.Serialize(this);
     }

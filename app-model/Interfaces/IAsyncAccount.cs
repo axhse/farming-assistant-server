@@ -15,6 +15,7 @@ namespace App.Models
 
         Recommendation[] GetRecommendations(Field field);
         Task<string[]> LoadRecommendationsAsync(Field field);
+        Task<string[]> LoadAllRecommendationsAsync();
         Task<string[]> SignInAsync(string username, string password);
         Task<string[]> SignUpAsync(string username, string password);
         Task<string[]> UpdateCustomerInfoAsync();
