@@ -12,17 +12,27 @@ class RecommendationMaker:    # TODO: Test
     relevance_periods = {'Watering': 50_000, 'Fertilizing': 100_000, 'Harvest': 500_000}
 
     @staticmethod
-    def get_recommendations(target_field):
-        if not AccountUtils.field_is_correct(target_field, contains_all_keys=True)\
-                or target_field['PlantName'] in [None, 'None']:
-            return []
+    def get_all_recommendations(fields):
         recommendations = []
+        locations = []
+        for field in fields:
+            if not AccountUtils.field_is_correct(field, contains_all_keys=True) \
+                    or field['PlantName'] in [None, 'None']:
+                locations.append(None)
+                recommendations.append([])
+            else:
+                location = Location(field['Latitude'], field['Longitude'])
+                locations.append(location)
+                weather_list = WeatherAPI.get_all_simple_predictions(location)
+                weather = WeatherForecaster.get_forecast(weather_list)
+                recommendations.append(RecommendationMaker.__get_recommendations(field, weather))
+        return recommendations
 
+    @staticmethod
+    def __get_recommendations(target_field, weather):
+        recommendations = []
         plant = target_field['PlantName']
         planting_date = target_field['PlantingDate']    # unix timestamp
-        location = Location(target_field['Latitude'], target_field['Longitude'])
-        weather_list = WeatherAPI.get_all_simple_predictions(location)
-        weather = WeatherForecaster.get_forecast(weather_list)
         temperature = weather.temperature
         humidity = weather.humidity
 
@@ -43,12 +53,12 @@ class RecommendationMaker:    # TODO: Test
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
 
-        watering_rates = {'Carrot': 0.5,
+        watering_rates = {'Carrot': 0.6,
                           'Corn': 0.2,
                           'Potato': 0.1,
-                          'Tomato': 0.8,
+                          'Tomato': 1,
                           'Wheat': 0}
-        watering_needs = watering_rates[plant] * (1 + 0.1 * max(temperature - 20, 0) - 0.01 * humidity)
+        watering_needs = watering_rates[plant] * (1 + 0.1 * max(temperature - 20, 0)) - 0.005 * humidity
         if watering_needs > 0.2:    # Watering
             recommendation_type = 'Watering'
             if 0.2 < watering_needs <= 0.5:
@@ -67,17 +77,12 @@ class RecommendationMaker:    # TODO: Test
                                       'Potato': 30,
                                       'Tomato': 20,
                                       'Wheat': 7}
-        fertilizing_periods = {'Carrot': 20,
-                               'Corn': 40,
-                               'Potato': 30,
-                               'Tomato': 20,
-                               'Wheat': 7}
         if time() - planting_date < active_fertilizing_periods[plant] * 86400 and humidity > 30:    # Fertilizing
             recommendation_type = 'Fertilizing'
             recommendation_value = 'Нужно много удобрений.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]
             recommendations.append(Recommendation(recommendation_type, recommendation_value, relevance_limit_timestamp))
-        elif time() - planting_date < fertilizing_periods[plant] * 86400 and humidity > 60:
+        elif time() - planting_date < (maximum_harvest_days[plant] - 5) * 86400 and humidity > 60:
             recommendation_type = 'Fertilizing'
             recommendation_value = 'Нужно немного удобрений.'
             relevance_limit_timestamp = round(time()) + RecommendationMaker.relevance_periods[recommendation_type]

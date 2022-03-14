@@ -81,16 +81,13 @@ class Server:    # Tested OK
             response = Response(token=token if new_token is None else new_token)
 
             if request['Type'] == 'GetRecommendationsRequest':
-                all_recommendations = []
                 for field in request['TargetFields']:
-                    if AccountUtils.field_is_correct(field):
-                        field_recommendations = RecommendationMaker.get_recommendations(field)
-                        field_recommendations = [r.get_object_dict() for r in field_recommendations]
-                        all_recommendations.append(field_recommendations)
-                    else:
+                    if not AccountUtils.field_is_correct(field):
                         response.Errors = ['InvalidFieldError']
                         return response
-                response.Parameter = json.dumps(all_recommendations)
+                recommendations = RecommendationMaker.get_all_recommendations(request['TargetFields'])
+                recommendations = [[r.get_object_dict() for r in arr] for arr in recommendations]
+                response.Parameter = json.dumps(recommendations)
 
             else:
                 if username is None:    # Token doesn't exist
