@@ -85,7 +85,10 @@ class Server:    # Tested OK
                     if not AccountUtils.field_is_correct(field):
                         response.Errors = ['InvalidFieldError']
                         return response
-                recommendations = RecommendationMaker.get_all_recommendations(request['TargetFields'])
+                if username is not None and username.count('fields'):    # temp
+                    recommendations = RecommendationMaker.get_all_random_recommendations(request['TargetFields'])
+                else:
+                    recommendations = RecommendationMaker.get_all_recommendations(request['TargetFields'])
                 recommendations = [[r.get_object_dict() for r in arr] for arr in recommendations]
                 response.Parameter = json.dumps(recommendations)
 

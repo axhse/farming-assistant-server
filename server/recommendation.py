@@ -3,6 +3,8 @@ from time import time
 from weather import Location, WeatherAPI
 from weather_forecaster import WeatherForecaster
 from account_utils import AccountUtils
+from random import randint
+from weather import SimpleWeather
 
 
 class RecommendationMaker:    # TODO: Test
@@ -10,6 +12,22 @@ class RecommendationMaker:    # TODO: Test
     RECOMMENDATION_TYPES = ['Watering', 'Fertilizing', 'Harvest']
     # 86 400 seconds = 1 day
     relevance_periods = {'Watering': 50_000, 'Fertilizing': 100_000, 'Harvest': 500_000}
+
+    @staticmethod
+    def get_all_random_recommendations(fields):    # temp
+        recommendations = []
+        locations = []
+        for field in fields:
+            if not AccountUtils.field_is_correct(field, contains_all_keys=True) \
+                    or field['PlantName'] in [None, 'None']:
+                locations.append(None)
+                recommendations.append([])
+            else:
+                location = Location(field['Latitude'], field['Longitude'])
+                locations.append(location)
+                weather = SimpleWeather(randint(15, 30), randint(15, 80), 1000)
+                recommendations.append(RecommendationMaker.__get_recommendations(field, weather))
+        return recommendations
 
     @staticmethod
     def get_all_recommendations(fields):
